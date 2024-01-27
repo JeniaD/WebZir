@@ -1,0 +1,13 @@
+robots.txt
+sitemap.xml
+.htaccess
+web.config
+README.txt
+LICENSE.txt
+CHANGELOG.txt
+access.log
+error.log
+admin
+administrator
+phpmyadmin
+wp-admin
