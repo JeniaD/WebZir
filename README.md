@@ -5,3 +5,8 @@ Basic web scanner for recon
 ```sh
 python3 webzir.py example.com
 ```
+
+## Installation
+```sh
+pip3 install -r requirements.txt
+```
