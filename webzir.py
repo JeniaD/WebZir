@@ -12,7 +12,7 @@ def main():
     print(f"WebZir scanner v{coreModules.version}\n")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("target", help="your target URL (ex. 1.2.3.4 or example.com)")
+    parser.add_argument("target", help="your target URL")
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
     args = parser.parse_args()
 
