@@ -3,22 +3,6 @@ import requests
 import re
 import random
 
-# def CheckConnectivity(ip, port, timeout):
-#     try:
-#         with socket.create_connection((ip, port), timeout=timeout):
-#             return True
-#     except (socket.timeout, socket.error, ConnectionRefusedError):
-#         return False
-#     # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#     # s.settimeout(timeout)
-#     # try:
-#     #     s.connect((ip, int(port)))
-#     #     s.shutdown(socket.SHUT_RDWR)
-#     # except:
-#     #     return False
-#     # s.close()
-#     # return True
-
 def ConvertToIP(url):
     try:
         # Check if the address starts with 'http://' or 'https://'
@@ -60,27 +44,28 @@ def LoadList(name):
 
 class Core:
     def __init__(self, target="127.0.0.1") -> None:
-        self.version = "0.0"
+        self.version = "0.1"
         self.target = target
-        self.targetURL = target
+        self.targetURL = None
+        self.targetIP = None
+
         self.timeout = 3
         self.port = 0
+        self.userAgent = "webzir"
     
     def SetTarget(self, t):
         self.target = t
-        self.targetURL = t
     
-    def Setup(self):
-        self.target = ConvertToIP(self.target)
-        if not self.target: #IsWebsiteUp(self.target):
-            raise RuntimeError("Host doesn't seem to be reachable")
-        # https = CheckConnectivity(self.target, 443, self.timeout)
-        # if https:
-        #     self.port = 443
-        # else:
-        #     http = CheckConnectivity(self.target, 80, self.timeout)
-        #     if http: self.port = 80
-        #     else: raise RuntimeError("Host doesn't seem to run on http or https")
+    def RandomizeUserAgent(self):
+        self.userAgent = random.choice(LoadList("userAgents.txt"))
+    
+    def Setup(self, randomUserAgent=False):
+        # Configure target IP and URL
+        self.targetIP = ConvertToIP(self.target)
+        if not self.targetIP: raise RuntimeError("Host doesn't seem to be reachable")
+        self.targetURL = self.target if self.target.startswith("http") else f"https://{self.target}"
+
+        if randomUserAgent: self.RandomizeUserAgent()
 
     def DetectTech(self):
         nonExistentResponse = requests.head(f"http://{self.target}/{RandomString()}")

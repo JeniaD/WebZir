@@ -16,15 +16,11 @@ def main():
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
     args = parser.parse_args()
 
-    print("[?] Target:", args.target)
-    print("[?] Using random user agent:", args.random_agent)
-    print()
-
     try:
         coreModules.SetTarget(args.target)
         coreModules.Setup()
 
-        print(f"[?] Starting scan against {coreModules.target}...")
+        print(f"[?] Starting scan against {coreModules.targetURL} ({coreModules.targetIP})...")
         coreModules.DetectTech()
     except RuntimeError as e:
         print("[-] Fatal error:", e)
