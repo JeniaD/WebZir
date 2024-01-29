@@ -11,3 +11,7 @@ admin
 administrator
 phpmyadmin
 wp-admin
+README
+LICENSE
+CHANGELOG
+cli
