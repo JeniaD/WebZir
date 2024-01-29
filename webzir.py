@@ -23,7 +23,8 @@ def main():
             else:
                 print(f"[+] {finding}")
                 for i in coreModules.results[finding]:
-                    print(f" > {i}")
+                    print(f"{i}; ", end='')
+                print()
 
     except RuntimeError as e:
         print("[-] Fatal error:", e)

@@ -2,6 +2,7 @@ import socket
 import requests
 import re
 import random
+import time
 
 def ConvertToIP(url):
     try:
@@ -44,6 +45,7 @@ class Core:
         self.timeout = 3
         self.port = 0
         self.userAgent = "webzir"
+        self.retryAfter = 0
 
         self.results = {}
         self.debug = False
@@ -82,16 +84,21 @@ class Core:
         if self.debug: print(f"[v] Server headers received")
         if self.debug: print(f"[v] Checking for availability of bruteforce enumeration...")
 
-        nonExistentResponse = requests.head(f"{self.targetURL}/{RandomString()}")
-        if nonExistentResponse.status_code != 404:
+        nonExistentResponse = requests.head(f"{self.targetURL}/{RandomString()}", allow_redirects=True) # Allow redirects?
+        if nonExistentResponse.status_code == 429:
+            self.retryAfter = int(nonExistentResponse.headers["Retry-after"])/1000 + 1
+            if self.debug: print(f"[v] Set up Retry-after ({self.retryAfter})")
+        elif nonExistentResponse.status_code != 404:
             raise RuntimeError(f"Response for non-existent URL {self.target}/{RandomString()} responded with {nonExistentResponse}")
     
         if self.debug: print(f"[v] Starting bruteforce...")
         
         for variant in LoadList("basic.txt"):
-            if requests.head(f"{self.targetURL}/{variant}").status_code != 404:
+            if requests.head(f"{self.targetURL}/{variant}", allow_redirects=True).status_code != 404:
                 if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                 self.results["Interesting findings"] += [variant]
+                if self.debug: print(f"[v] Found {variant} ({requests.head(self.targetURL + '/' + variant).status_code})")
+                time.sleep(self.retryAfter)
                 # print("[+] Entry found:", variant)
             # else: print("[+] Entry not found:", variant, requests.head(f"http://{self.target}/{variant}").status_code)
         
