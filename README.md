@@ -12,7 +12,7 @@ pip3 install -r requirements.txt
 ```
 
 ## Functionality
-```sh
+```
 $ python3 webzir.py -h
 WebZir scanner v0.1
 
@@ -24,4 +24,16 @@ positional arguments:
 optional arguments:
   -h, --help          show this help message and exit
   -r, --random-agent  use random user agent
+```
+
+## Example
+```
+$ python3 webzir.py target.com -r
+WebZir scanner v0.x
+
+[?] Starting scan against https://target.com (xxx.xxx.x.xx)...
+
+[+] Server: Apache
+[+] Interesting findings
+robots.txt; .htaccess;
 ```
