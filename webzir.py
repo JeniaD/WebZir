@@ -20,5 +20,9 @@ def main():
         print("[-] Fatal error:", e)
         print("[?] Exiting...")
         exit(1)
+    except KeyboardInterrupt:
+        print("\n[-] Keyboard interruption")
+        print("[?] Exiting...")
+        exit(1)
 
 if __name__ == "__main__": main()
