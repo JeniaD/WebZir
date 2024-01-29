@@ -70,6 +70,9 @@ class Core:
         # except AttributeError:
         #     _GLOBAL_DEFAULT_TIMEOUT = object()
 
+        # Unsure why request takes too much time
+        # https://stackoverflow.com/questions/27324494/is-there-any-timeout-value-for-socket-gethostbynamehostname-in-python
+
     def DetectTech(self):
         if self.debug: print(f"[v] Getting server headers...")
         
