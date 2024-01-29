@@ -1,10 +1,4 @@
-try:
-    import argparse
-except ImportError as e:
-    print("[-] Fatal error:", e)
-    print("[?] Exiting...")
-    exit(1)
-
+import argparse
 from core import Core
 
 def main():

@@ -21,15 +21,6 @@ def ConvertToIP(url):
         # print(f"Error resolving {domain}: {e}")
         return None
 
-def IsWebsiteUp(url):
-    try:
-        response = requests.head(url)
-        return True
-        # return response.status_code // 100 == 2
-    except requests.RequestException as e:
-        print(e)
-        return False
-
 def RandomString():
     res = ""
     chars = "1234567890qwertyuiopasdfghjklzxcvbnm"
@@ -49,6 +40,7 @@ class Core:
         self.targetURL = None
         self.targetIP = None
 
+        self.protocol = ""
         self.timeout = 3
         self.port = 0
         self.userAgent = "webzir"
@@ -68,12 +60,12 @@ class Core:
         if randomUserAgent: self.RandomizeUserAgent()
 
     def DetectTech(self):
-        nonExistentResponse = requests.head(f"http://{self.target}/{RandomString()}")
+        nonExistentResponse = requests.head(f"{self.targetURL}/{RandomString()}")
         if nonExistentResponse.status_code != 404:
             raise RuntimeError(f"Response for non-existent URL {self.target}/{RandomString()} responded with {nonExistentResponse}")
         
         for variant in LoadList("basic.txt"):
-            if requests.head(f"http://{self.target}/{variant}").status_code != 404:
+            if requests.head(f"{self.targetURL}/{variant}").status_code != 404:
                 print("[+] Entry found:", variant)
             # else: print("[+] Entry not found:", variant, requests.head(f"http://{self.target}/{variant}").status_code)
         
