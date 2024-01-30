@@ -8,15 +8,17 @@ python3 webzir.py example.com
 
 ## Installation
 ```sh
+git clone https://github.com/JeniaD/WebZir.git
+cd WebZir
 pip3 install -r requirements.txt
 ```
 
 ## Functionality
 ```
 $ python3 webzir.py -h
-WebZir scanner v0.1
+WebZir scanner v0.2
 
-usage: webzir.py [-h] [-r] target
+usage: webzir.py [-h] [-r] [-v] target
 
 positional arguments:
   target              your target URL
@@ -24,6 +26,7 @@ positional arguments:
 optional arguments:
   -h, --help          show this help message and exit
   -r, --random-agent  use random user agent
+  -v, --verbose       use extensive output
 ```
 
 ## Example
