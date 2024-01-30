@@ -15,3 +15,5 @@ README
 LICENSE
 CHANGELOG
 cli
+cgi
+cgi-bin
