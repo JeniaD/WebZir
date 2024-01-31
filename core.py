@@ -4,6 +4,10 @@ import re
 import random
 import time
 
+# Wordlists
+IMPORTANTDIRS = "basic.txt"
+USERAGENTS = "userAgents.txt"
+
 def ConvertToIP(url):
     try:
         # Check if the address starts with 'http://' or 'https://'
@@ -41,7 +45,7 @@ class Core:
         self.targetURL = None
         self.targetIP = None
 
-        self.protocol = ""
+        self.protocol = "http"
         self.timeout = 3
         self.port = 0
         self.userAgent = "webzir"
@@ -54,26 +58,16 @@ class Core:
         self.target = t
     
     def RandomizeUserAgent(self):
-        self.userAgent = random.choice(LoadList("userAgents.txt"))
+        self.userAgent = random.choice(LoadList(USERAGENTS))
     
     def Setup(self, randomUserAgent=False, verbose=False):
         # Configure target IP and URL
         self.targetIP = ConvertToIP(self.target)
         if not self.targetIP: raise RuntimeError("Host doesn't seem to be reachable")
-        self.targetURL = self.target if self.target.startswith("http") else f"https://{self.target}"
+        self.targetURL = self.target if self.target.startswith("http") else f"{self.protocol}://{self.target}"
 
         if randomUserAgent: self.RandomizeUserAgent()
         self.debug = verbose
-
-        # https://stackoverflow.com/questions/27324494/is-there-any-timeout-value-for-socket-gethostbynamehostname-in-python
-        # socket.setdefaulttimeout(self.timeout)
-        # try:
-        #     _GLOBAL_DEFAULT_TIMEOUT = socket._GLOBAL_DEFAULT_TIMEOUT
-        # except AttributeError:
-        #     _GLOBAL_DEFAULT_TIMEOUT = object()
-
-        # Unsure why request takes too much time
-        # https://stackoverflow.com/questions/27324494/is-there-any-timeout-value-for-socket-gethostbynamehostname-in-python
 
     def DetectTech(self):
         if self.debug: print(f"[v] Getting server headers...")
@@ -91,14 +85,13 @@ class Core:
         elif nonExistentResponse.status_code != 404:
             raise RuntimeError(f"Response for non-existent URL {self.target}/{RandomString()} responded with {nonExistentResponse}")
     
-        if self.debug: print(f"[v] Starting bruteforce...")
-        
-        for variant in LoadList("basic.txt"):
-            if requests.head(f"{self.targetURL}/{variant}", allow_redirects=True).status_code != 404:
-                if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
-                self.results["Interesting findings"] += [variant]
-                if self.debug: print(f"[v] Found {variant} ({requests.head(self.targetURL + '/' + variant).status_code})")
-                time.sleep(self.retryAfter)
-                # print("[+] Entry found:", variant)
-            # else: print("[+] Entry not found:", variant, requests.head(f"http://{self.target}/{variant}").status_code)
-        
+        if nonExistentResponse.status_code in [429, 404]:
+            if self.debug: print(f"[v] Starting bruteforce...")
+            
+            for variant in LoadList(IMPORTANTDIRS):
+                req = requests.head(f"{self.targetURL}/{variant}", allow_redirects=True)
+                if req.status_code != 404:
+                    if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
+                    self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]
+                    if self.debug: print(f"[v] Found {variant} ({req.status_code})")
+                    time.sleep(self.retryAfter)
