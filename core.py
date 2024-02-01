@@ -3,10 +3,11 @@ import requests
 import re
 import random
 import time
+from bs4 import BeautifulSoup
 
 # Wordlists
-IMPORTANTDIRS = "basic.txt"
-USERAGENTS = "userAgents.txt"
+IMPORTANTENTRIES = "basic.txt" # Something should be checked to identify server
+USERAGENTS = "userAgents.txt" # List of user-agents
 
 def ConvertToIP(url):
     try:
@@ -40,7 +41,7 @@ def LoadList(name):
 
 class Core:
     def __init__(self, target="127.0.0.1") -> None:
-        self.version = "0.2"
+        self.version = "0.3"
         self.target = target
         self.targetURL = None
         self.targetIP = None
@@ -52,6 +53,7 @@ class Core:
         self.retryAfter = 0
 
         self.results = {}
+        self.wordlist = []
         self.debug = False
     
     def SetTarget(self, t):
@@ -88,10 +90,19 @@ class Core:
         if nonExistentResponse.status_code in [429, 404]:
             if self.debug: print(f"[v] Starting bruteforce...")
             
-            for variant in LoadList(IMPORTANTDIRS):
+            for variant in LoadList(IMPORTANTENTRIES):
                 req = requests.head(f"{self.targetURL}/{variant}", allow_redirects=True)
                 if req.status_code != 404:
                     if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                     self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]
                     if self.debug: print(f"[v] Found {variant} ({req.status_code})")
                     time.sleep(self.retryAfter)
+
+    def ScrapeWordlist(self):
+        req = requests.get(self.targetURL, allow_redirects=True)
+        soup = BeautifulSoup(req.content, "html.parser")
+        text = soup.find_all(text=True)
+        text = ' '.join(text)
+        text = text.replace('\n', ' ')
+        while "  " in text: text = text.replace("  ", ' ')
+        self.wordlist = list(dict.fromkeys([word for word in text.split(' ') if word and len(word) < 10 and len(word) > 1]))
