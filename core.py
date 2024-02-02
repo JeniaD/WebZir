@@ -9,6 +9,9 @@ from bs4 import BeautifulSoup
 IMPORTANTENTRIES = "basic.txt" # Something should be checked to identify server
 USERAGENTS = "userAgents.txt" # List of user-agents
 
+# Values
+MAXREQWAIT = 5
+
 def ConvertToIP(url):
     try:
         # Check if the address starts with 'http://' or 'https://'
@@ -41,7 +44,7 @@ def LoadList(name):
 
 class Core:
     def __init__(self, target="127.0.0.1") -> None:
-        self.version = "0.3"
+        self.version = "0.4"
         self.target = target
         self.targetURL = None
         self.targetIP = None
@@ -49,11 +52,13 @@ class Core:
         self.protocol = "http"
         self.timeout = 3
         self.port = 0
-        self.userAgent = "webzir"
+        self.userAgent = "webzir/" + self.version
         self.retryAfter = 0
 
         self.results = {}
         self.wordlist = []
+        self.wayback = []
+
         self.debug = False
     
     def SetTarget(self, t):
@@ -82,12 +87,12 @@ class Core:
 
         nonExistentResponse = requests.head(f"{self.targetURL}/{RandomString()}", allow_redirects=True) # Allow redirects?
         if nonExistentResponse.status_code == 429:
-            self.retryAfter = int(nonExistentResponse.headers["Retry-after"])/1000 + 1
+            self.retryAfter = min(MAXREQWAIT, int(nonExistentResponse.headers["Retry-after"])/1000 + 1)
             if self.debug: print(f"[v] Set up Retry-after ({self.retryAfter})")
         elif nonExistentResponse.status_code != 404:
             raise RuntimeError(f"Response for non-existent URL {self.target}/{RandomString()} responded with {nonExistentResponse}")
     
-        if nonExistentResponse.status_code in [429, 404]:
+        if nonExistentResponse.status_code in [429, 404]: # redirect?
             if self.debug: print(f"[v] Starting bruteforce...")
             
             for variant in LoadList(IMPORTANTENTRIES):
@@ -96,7 +101,7 @@ class Core:
                     if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                     self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]
                     if self.debug: print(f"[v] Found {variant} ({req.status_code})")
-                    time.sleep(self.retryAfter)
+                time.sleep(self.retryAfter)
 
     def ScrapeWordlist(self):
         req = requests.get(self.targetURL, allow_redirects=True)
@@ -106,3 +111,20 @@ class Core:
         text = text.replace('\n', ' ')
         while "  " in text: text = text.replace("  ", ' ')
         self.wordlist = list(dict.fromkeys([word for word in text.split(' ') if word and len(word) < 10 and len(word) > 1]))
+
+    def Wayback(self):
+        if self.debug: print(f"[v] Searching in Wayback machine...")
+        target = self.target.replace("http://", '').replace("https://", '') # Clear protocol
+        portal = f"http://web.archive.org/cdx/search/cdx?url=*.{target}/*&output=json&fl=original&collapse=urlkey"
+
+        req = requests.get(portal)
+        result = []
+        
+        for v in req.json()[1:]:
+            if type(v) == list:
+                result += v
+            else: result += [v]
+
+        result = list(dict.fromkeys(result))
+
+        if result: self.wayback = result #self.results["Wayback"] = result

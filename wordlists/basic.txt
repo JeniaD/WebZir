@@ -19,3 +19,5 @@ cli
 cgi
 cgi-bin
 cabinet
+login
+register

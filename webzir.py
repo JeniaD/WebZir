@@ -20,6 +20,7 @@ def main():
         print(f"[?] Starting scan against {coreModules.targetURL} ({coreModules.targetIP})...\n")
         coreModules.DetectTech()
         coreModules.ScrapeWordlist()
+        coreModules.Wayback()
 
         for finding in coreModules.results:
             if type(coreModules.results[finding]) != list:
@@ -29,6 +30,8 @@ def main():
                 for i in coreModules.results[finding]:
                     print(f"{i}; ", end='')
                 print()
+        
+        if coreModules.wayback: print(f"[+] Found {len(coreModules.wayback)} link(s) in Wayback machine")
         
         if args.output:
             if args.verbose: print("[?] Saving data to the files...")
@@ -45,6 +48,9 @@ def main():
                         file.write('\n')
             with open(f"{args.output}/dictionary.txt", 'w') as file:
                 for element in coreModules.wordlist: file.write(element + '\n')
+            if coreModules.wayback:
+                with open(f"{args.output}/wayback.txt", 'w') as file:
+                    for element in coreModules.wayback: file.write(element + '\n')
 
     except RuntimeError as e:
         print("[-] Fatal error:", e)
