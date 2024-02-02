@@ -9,6 +9,9 @@ from bs4 import BeautifulSoup
 IMPORTANTENTRIES = "basic.txt" # Something should be checked to identify server
 USERAGENTS = "userAgents.txt" # List of user-agents
 
+# Values
+MAXREQWAIT = 5
+
 def ConvertToIP(url):
     try:
         # Check if the address starts with 'http://' or 'https://'
@@ -82,7 +85,7 @@ class Core:
 
         nonExistentResponse = requests.head(f"{self.targetURL}/{RandomString()}", allow_redirects=True) # Allow redirects?
         if nonExistentResponse.status_code == 429:
-            self.retryAfter = int(nonExistentResponse.headers["Retry-after"])/1000 + 1
+            self.retryAfter = min(MAXREQWAIT, int(nonExistentResponse.headers["Retry-after"])/1000 + 1)
             if self.debug: print(f"[v] Set up Retry-after ({self.retryAfter})")
         elif nonExistentResponse.status_code != 404:
             raise RuntimeError(f"Response for non-existent URL {self.target}/{RandomString()} responded with {nonExistentResponse}")
