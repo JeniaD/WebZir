@@ -52,7 +52,7 @@ class Core:
         self.protocol = "http"
         self.timeout = 3
         self.port = 0
-        self.userAgent = "webzir"
+        self.userAgent = "webzir/" + self.version
         self.retryAfter = 0
 
         self.results = {}
