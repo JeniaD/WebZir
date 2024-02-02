@@ -31,7 +31,7 @@ def main():
                     print(f"{i}; ", end='')
                 print()
         
-        if coreModules.wayback: print(f"[+] Found {len(coreModules.wayback)} links in Wayback machine")
+        if coreModules.wayback: print(f"[+] Found {len(coreModules.wayback)} link(s) in Wayback machine")
         
         if args.output:
             if args.verbose: print("[?] Saving data to the files...")
