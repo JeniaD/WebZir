@@ -57,6 +57,8 @@ class Core:
 
         self.results = {}
         self.wordlist = []
+        self.wayback = []
+
         self.debug = False
     
     def SetTarget(self, t):
@@ -109,3 +111,20 @@ class Core:
         text = text.replace('\n', ' ')
         while "  " in text: text = text.replace("  ", ' ')
         self.wordlist = list(dict.fromkeys([word for word in text.split(' ') if word and len(word) < 10 and len(word) > 1]))
+
+    def Wayback(self):
+        if self.debug: print(f"[v] Searching in Wayback machine...")
+        target = self.target.replace("http://", '').replace("https://", '') # Clear protocol
+        portal = f"http://web.archive.org/cdx/search/cdx?url=*.{target}/*&output=json&fl=original&collapse=urlkey"
+
+        req = requests.get(portal)
+        result = []
+        
+        for v in req.json()[1:]:
+            if type(v) == list:
+                result += v
+            else: result += [v]
+
+        result = list(dict.fromkeys(result))
+
+        if result: self.wayback = result #self.results["Wayback"] = result
