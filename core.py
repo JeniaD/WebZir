@@ -90,7 +90,7 @@ class Core:
         elif nonExistentResponse.status_code != 404:
             raise RuntimeError(f"Response for non-existent URL {self.target}/{RandomString()} responded with {nonExistentResponse}")
     
-        if nonExistentResponse.status_code in [429, 404]:
+        if nonExistentResponse.status_code in [429, 404]: # redirect?
             if self.debug: print(f"[v] Starting bruteforce...")
             
             for variant in LoadList(IMPORTANTENTRIES):
@@ -99,7 +99,7 @@ class Core:
                     if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                     self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]
                     if self.debug: print(f"[v] Found {variant} ({req.status_code})")
-                    time.sleep(self.retryAfter)
+                time.sleep(self.retryAfter)
 
     def ScrapeWordlist(self):
         req = requests.get(self.targetURL, allow_redirects=True)
