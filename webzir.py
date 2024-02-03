@@ -2,6 +2,9 @@ import argparse
 import os
 from core import Core
 
+def Log(msg, status='?'):
+    print(f"[{status}] {msg}")
+
 def main():
     coreModules = Core()
     print(f"WebZir scanner v{coreModules.version}\n")
@@ -17,21 +20,23 @@ def main():
         coreModules.SetTarget(args.target)
         coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose)
 
-        print(f"[?] Starting scan against {coreModules.targetURL} ({coreModules.targetIP})...\n")
+        Log(f"Starting scan against {coreModules.targetURL} ({coreModules.targetIP})...", status='?')
+        print()
+
         coreModules.DetectTech()
         coreModules.ScrapeWordlist()
         coreModules.Wayback()
 
         for finding in coreModules.results:
             if type(coreModules.results[finding]) != list:
-                print(f"[+] {finding}: {coreModules.results[finding]}")
+                Log(f"{finding}: {coreModules.results[finding]}", status='+')
             else:
-                print(f"[+] {finding}")
+                Log(f"{finding}", status='+')
                 for i in coreModules.results[finding]:
                     print(f"{i}; ", end='')
                 print()
         
-        if coreModules.wayback: print(f"[+] Found {len(coreModules.wayback)} link(s) in Wayback machine")
+        if coreModules.wayback: Log(f"Found {len(coreModules.wayback)} link(s) in Wayback machine", status='+')
         
         if args.output:
             if args.verbose: print("[?] Saving data to the files...")
@@ -53,12 +58,13 @@ def main():
                     for element in coreModules.wayback: file.write(element + '\n')
 
     except RuntimeError as e:
-        print("[-] Fatal error:", e)
-        print("[?] Exiting...")
+        Log(f"Fatal error: {e}", status='-')
+        Log("Exiting...", status='?')
         exit(1)
     except KeyboardInterrupt:
-        print("\n[-] Keyboard interruption")
-        print("[?] Exiting...")
+        print()
+        Log("Keyboard interruption", status='-')
+        Log("Exiting...", status='?')
         exit(1)
 
 if __name__ == "__main__": main()
