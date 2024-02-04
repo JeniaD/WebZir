@@ -79,13 +79,13 @@ class Core:
     def DetectTech(self):
         if self.debug: print(f"[v] Getting server headers...")
         
-        response = requests.head(self.targetURL, allow_redirects=True)
+        response = requests.head(self.targetURL, headers={"User-Agent": self.userAgent}, allow_redirects=True)
         if response.headers["Server"]: self.results["Server"] = response.headers["Server"]
         
         if self.debug: print(f"[v] Server headers received")
         if self.debug: print(f"[v] Checking for availability of bruteforce enumeration...")
 
-        nonExistentResponse = requests.head(f"{self.targetURL}/{RandomString()}", allow_redirects=True) # Allow redirects?
+        nonExistentResponse = requests.head(f"{self.targetURL}/{RandomString()}", headers={"User-Agent": self.userAgent}, allow_redirects=True) # Allow redirects?
         if nonExistentResponse.status_code == 429:
             self.retryAfter = min(MAXREQWAIT, int(nonExistentResponse.headers["Retry-after"])/1000 + 1)
             if self.debug: print(f"[v] Set up Retry-after ({self.retryAfter})")
@@ -96,7 +96,7 @@ class Core:
             if self.debug: print(f"[v] Starting bruteforce...")
             
             for variant in LoadList(IMPORTANTENTRIES):
-                req = requests.head(f"{self.targetURL}/{variant}", allow_redirects=True)
+                req = requests.head(f"{self.targetURL}/{variant}", headers={"User-Agent": self.userAgent}, allow_redirects=True)
                 if req.status_code != 404:
                     if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                     self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]
@@ -104,7 +104,7 @@ class Core:
                 time.sleep(self.retryAfter)
 
     def ScrapeWordlist(self):
-        req = requests.get(self.targetURL, allow_redirects=True)
+        req = requests.get(self.targetURL, headers={"User-Agent": self.userAgent}, allow_redirects=True)
         soup = BeautifulSoup(req.content, "html.parser")
         text = soup.find_all(text=True)
         text = ' '.join(text)
@@ -117,7 +117,7 @@ class Core:
         target = self.target.replace("http://", '').replace("https://", '') # Clear protocol
         portal = f"http://web.archive.org/cdx/search/cdx?url=*.{target}/*&output=json&fl=original&collapse=urlkey"
 
-        req = requests.get(portal)
+        req = requests.get(portal, headers={"User-Agent": self.userAgent})
         result = []
         
         for v in req.json()[1:]:
