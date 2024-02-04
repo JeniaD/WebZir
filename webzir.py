@@ -1,15 +1,31 @@
 import argparse
 import os
 from core import Core
+import colorama
+from colorama import Fore, Style
 
 def Log(msg, status='?'):
-    print(f"[{status}] {msg}")
+    color = Fore.CYAN
+    if status == '+': color = Fore.GREEN
+    elif status == '-': color = Fore.RED
+
+    print(f"[{color}{status}{Style.RESET_ALL}] {msg}")
+
+def PrintName(v):
+    print(''' __      __      ___.   __________.__        
+/  \    /  \ ____\_ |__ \____    /|__|______ 
+\   \/\/   // __ \| __ \  /     / |  \_  __ \\
+ \        /\  ___/| \_\ \/     /_ |  ||  | \/
+  \__/\  /  \___  >___  /_______ \|__||__|   
+       \/       \/    \/        \/''' + f" {Fore.GREEN}v{v}{Style.RESET_ALL}\n")
 
 def main():
     coreModules = Core()
-    print(f"WebZir scanner v{coreModules.version}\n")
+    colorama.init(autoreset=True)
+    colorama.ansi.clear_screen()
+    PrintName(coreModules.version)
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=f"WebZir scanner v{coreModules.version}")
     parser.add_argument("target", help="your target URL")
     parser.add_argument("--output", help="output directory path")
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
@@ -32,6 +48,7 @@ def main():
                 Log(f"{finding}: {coreModules.results[finding]}", status='+')
             else:
                 Log(f"{finding}", status='+')
+                print("    ", end='')
                 for i in coreModules.results[finding]:
                     print(f"{i}; ", end='')
                 print()
