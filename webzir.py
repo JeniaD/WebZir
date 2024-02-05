@@ -36,7 +36,7 @@ def main():
         coreModules.SetTarget(args.target)
         coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose)
 
-        Log(f"Starting scan against {coreModules.targetURL} ({coreModules.targetIP})...", status='?')
+        Log(f"Starting scan against {coreModules.target.URL} ({coreModules.target.IP})...", status='?')
         print()
 
         coreModules.DetectTech()
@@ -59,7 +59,7 @@ def main():
             if args.verbose: print("[?] Saving data to the files...")
             if not os.path.exists(args.output): os.makedirs(args.output)
             with open(f"{args.output}/report.txt", 'w') as file:
-                file.write(f"WebZir scanner v{coreModules.version}\nScan report for the host {coreModules.targetURL} ({coreModules.targetIP})\n\n")
+                file.write(f"WebZir scanner v{coreModules.version}\nScan report for the host {coreModules.target.URL} ({coreModules.target.IP})\n\n")
 
                 for finding in coreModules.results:
                     if type(coreModules.results[finding]) != list:
