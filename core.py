@@ -59,7 +59,7 @@ class Target:
 
 class Core:
     def __init__(self, target="127.0.0.1") -> None:
-        self.version = "0.4"
+        self.version = "0.5"
         self.userAgent = "webzir/" + self.version
 
         self.target = Target()
