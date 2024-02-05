@@ -21,3 +21,12 @@ cgi-bin
 cabinet
 login
 register
+joomla
+typo3
+backend
+admin/login
+user/login
+wp-login.php
+drupal
+pma
+dashboard

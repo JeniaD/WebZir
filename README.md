@@ -4,12 +4,12 @@ A basic web scanner designed for reconnaissance.
 WebZir simplifies web findings and combines features of various tools commonly used by pentesters when assessing websites, such as Nikto, Gobuster, and Cewl, to expedite the process. Despite providing combined functionality of multiple tools, WebZir minimizes dependencies to ensure a quick scanning process and easy installation.
 
 ## Usage
-```sh
+```
 python3 webzir.py example.com
 ```
 
 ## Installation
-```sh
+```
 git clone https://github.com/JeniaD/WebZir.git
 cd WebZir
 pip3 install -r requirements.txt
