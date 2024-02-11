@@ -2,6 +2,7 @@ import argparse
 import os
 import time
 import datetime
+import requests
 import colorama
 from colorama import Fore, Style
 from core import Core
@@ -84,7 +85,7 @@ def main():
                 with open(f"{args.output}/wayback.txt", 'w') as file:
                     for element in coreModules.wayback: file.write(element + '\n')
 
-    except RuntimeError as e:
+    except (RuntimeError, requests.exceptions.ConnectionError) as e:
         Log(f"Fatal error: {e}", status='-')
         Log("Exiting...", status='?')
         exit(1)
