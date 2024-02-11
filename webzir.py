@@ -28,7 +28,7 @@ def main():
     colorama.ansi.clear_screen()
     PrintName(coreModules.version)
 
-    parser = argparse.ArgumentParser(description=f"WebZir scanner v{coreModules.version}")
+    parser = argparse.ArgumentParser(description=f"Lightweight web scanner for quick recon")
     parser.add_argument("target", help="your target URL")
     parser.add_argument("--output", help="output directory path")
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
