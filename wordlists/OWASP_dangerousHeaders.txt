@@ -1,6 +1,4 @@
-﻿last_update_utc 2024-02-04 19:54:09
-headers
-$wsep
+﻿$wsep
 Host-Header
 K-Proxy-Request
 Liferay-Portal
