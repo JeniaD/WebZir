@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 # Global values
 IMPORTANTENTRIES = "common.txt" # Wordlist for something that should be checked to identify server
+IMPORTANTHEADERS = "OWASP_dangerousHeaders.txt" # Wordlist for headers that should be checked
 USERAGENTS = "userAgents.txt" # List of random user-agents
 MAXREQWAIT = 3 # Max wait time between requests
 DEFAULTPROTOCOL = "http"
@@ -59,7 +60,7 @@ class Target:
 
 class Core:
     def __init__(self, target="127.0.0.1") -> None:
-        self.version = "0.5"
+        self.version = "0.6"
         self.userAgent = "webzir/" + self.version
 
         self.target = Target()
@@ -84,7 +85,9 @@ class Core:
         if self.debug: print(f"[v] Getting server headers...")
         
         response = requests.head(self.target.URL, headers={"User-Agent": self.userAgent}, allow_redirects=True)
-        if response.headers["Server"]: self.results["Server"] = response.headers["Server"]
+        for header in response.headers:
+            if header in LoadList(IMPORTANTHEADERS):
+                self.results[header] = response.headers[header] # WARNING: dangerous, might be overwritten
         
         if self.debug: print(f"[v] Server headers received")
         if self.debug: print(f"[v] Checking for availability of bruteforce enumeration...")
@@ -113,7 +116,7 @@ class Core:
         text = soup.find_all(text=True)
         text = ' '.join(text)
         text = text.replace('\n', ' ')
-        while "  " in text: text = text.replace("  ", ' ')
+        while "  " in text: text = text.replace("  ", ' ') # Perhaps remove spaces entirely?
         self.wordlist = list(dict.fromkeys([word for word in text.split(' ') if word and len(word) < 10 and len(word) > 1]))
 
     def Wayback(self):

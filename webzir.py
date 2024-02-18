@@ -1,8 +1,11 @@
 import argparse
 import os
-from core import Core
+import time
+import datetime
+import requests
 import colorama
 from colorama import Fore, Style
+from core import Core
 
 def Log(msg, status='?'):
     color = Fore.CYAN
@@ -25,7 +28,7 @@ def main():
     colorama.ansi.clear_screen()
     PrintName(coreModules.version)
 
-    parser = argparse.ArgumentParser(description=f"WebZir scanner v{coreModules.version}")
+    parser = argparse.ArgumentParser(description=f"Lightweight web scanner for quick recon")
     parser.add_argument("target", help="your target URL")
     parser.add_argument("--output", help="output directory path")
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
@@ -36,12 +39,16 @@ def main():
         coreModules.SetTarget(args.target)
         coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose)
 
-        Log(f"Starting scan against {coreModules.target.URL} ({coreModules.target.IP})...", status='?')
+        Log(f"Initiating a security scan for {coreModules.target.URL} ({coreModules.target.IP})...", status='?')
         print()
+
+        startScanTime = time.time()
 
         coreModules.DetectTech()
         coreModules.ScrapeWordlist()
         coreModules.Wayback()
+
+        totalScanTime = round(time.time() - startScanTime, 2)
 
         for finding in coreModules.results:
             if type(coreModules.results[finding]) != list:
@@ -54,12 +61,16 @@ def main():
                 print()
         
         if coreModules.wayback: Log(f"Found {len(coreModules.wayback)} link(s) in Wayback machine", status='+')
+
+        print()
+        Log(f"Time elapsed: {totalScanTime}s", status='?')
         
         if args.output:
             if args.verbose: print("[?] Saving data to the files...")
             if not os.path.exists(args.output): os.makedirs(args.output)
             with open(f"{args.output}/report.txt", 'w') as file:
-                file.write(f"WebZir scanner v{coreModules.version}\nScan report for the host {coreModules.target.URL} ({coreModules.target.IP})\n\n")
+                file.write(f"WebZir scanner v{coreModules.version}\nScan report for the host {coreModules.target.URL} ({coreModules.target.IP}) ")
+                file.write(f"{datetime.datetime.now()}\n\n")
 
                 for finding in coreModules.results:
                     if type(coreModules.results[finding]) != list:
@@ -74,7 +85,7 @@ def main():
                 with open(f"{args.output}/wayback.txt", 'w') as file:
                     for element in coreModules.wayback: file.write(element + '\n')
 
-    except RuntimeError as e:
+    except (RuntimeError, requests.exceptions.ConnectionError) as e:
         Log(f"Fatal error: {e}", status='-')
         Log("Exiting...", status='?')
         exit(1)
