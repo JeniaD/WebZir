@@ -42,7 +42,7 @@ def LoadList(name):
         return file.read().split('\n')
 
 class Target:
-    def __init__(self, hostname=None, ip=None, protocol=None, port=None, path="", timeout=0):
+    def __init__(self, hostname=None, ip=None, protocol=DEFAULTPROTOCOL, port=None, path="", timeout=0):
         self.hostname = hostname
         self.IP = ip
         self.protocol = protocol
