@@ -44,12 +44,12 @@ def LoadList(name):
         return file.read().split('\n')
 
 class Target:
-    def __init__(self):
-        self.raw = None
-        self.URL = None
-        self.IP = None
-        self.protocol = None
-        self.timeout = 0
+    def __init__(self, raw=None, url=None, ip=None, protocol=None, timeout=0):
+        self.raw = raw
+        self.URL = url
+        self.IP = ip
+        self.protocol = protocol
+        self.timeout = timeout
     
     def Setup(self, target, protocol=DEFAULTPROTOCOL):
         self.protocol = protocol
