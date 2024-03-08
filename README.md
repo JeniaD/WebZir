@@ -1,11 +1,11 @@
 # Webzir scanner
 A basic web scanner designed for reconnaissance.
 
-WebZir simplifies web findings and combines features of various tools commonly used by pentesters when assessing websites, such as Nikto, Gobuster, and Cewl, to expedite the process. Despite providing combined functionality of multiple tools, WebZir minimizes dependencies to ensure a quick scanning process and easy installation.
+WebZir simplifies web findings and combines features of various tools commonly used by pentesters when assessing websites, such as Nikto, Gobuster, and Cewl. Despite providing combined functionality of multiple tools, WebZir minimizes dependencies to ensure a quick scanning process and easy installation.
 
 ## Usage
 ```
-python3 webzir.py example.com
+python3 webzir.py target.com
 ```
 
 ## Installation
@@ -18,7 +18,6 @@ pip3 install -r requirements.txt
 ## Functionality
 ```
 $ python3 webzir.py -h
-WebZir scanner v0.4
 
 usage: webzir.py [-h] [--output OUTPUT] [-r] [-v] target
 
@@ -37,12 +36,19 @@ Initiate a scan with a random user-agent and save the results to the `./results`
 
 ```
 $ python3 webzir.py target.com -r --output results
-WebZir scanner v0.4
+ __      __      ___.   __________.__        
+/  \    /  \ ____\_ |__ \____    /|__|______ 
+\   \/\/   // __ \| __ \  /     / |  \_  __ \
+ \        /\  ___/| \_\ \/     /_ |  ||  | \/
+  \__/\  /  \___  >___  /_______ \|__||__|   
+       \/       \/    \/        \/ v0.x
 
-[?] Starting scan against https://target.com (xxx.xxx.x.xx)...
+[?] Initiating a security scan for http://target.com:80/ (xxx.xx.xxx.xx)...
 
-[+] Server: Apache
+[+] Server: Apache/2.4.56 (Debian)
 [+] Interesting findings
-robots.txt; .htaccess;
+    robots.txt (200); humans.txt (200); sitemap.xml (200); dashboard (403); 
 [+] Found 1 link(s) in Wayback machine
+
+[?] Time elapsed: 12.1s
 ```
