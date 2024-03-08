@@ -10,8 +10,8 @@ IMPORTANTENTRIES = "common.txt" # Wordlist for something that should be checked 
 IMPORTANTHEADERS = "OWASP_dangerousHeaders.txt" # Wordlist for headers that should be checked
 USERAGENTS = "userAgents.txt" # List of random user-agents
 MAXREQWAIT = 3 # Max wait time between requests
-DEFAULTPROTOCOL = "http"
-DEFAULTPORT = 80
+DEFAULTPROTOCOL = "http" # Default protocol
+DEFAULTPORT = 80 # Default port
 
 # Convert target URL to IP address
 def ConvertToIP(url):
