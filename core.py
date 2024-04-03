@@ -93,6 +93,7 @@ class Core:
         self.wayback = []
 
         self.debug = False
+        self.allowRedirect = False
     
     def SetTarget(self, t):
         self.target.Parse(t)
@@ -101,12 +102,18 @@ class Core:
     def RandomizeUserAgent(self):
         self.userAgent = random.choice(LoadList(USERAGENTS))
     
-    def Setup(self, randomUserAgent=False, verbose=False):
+    def Setup(self, randomUserAgent=False, verbose=False, allowRedirect=False):
         if randomUserAgent: self.RandomizeUserAgent()
         self.debug = verbose
+        self.allowRedirect = allowRedirect
 
     def DetectTech(self):
         if self.debug: print(f"[v] Getting server headers...")
+        
+        response = requests.head(self.target.GetFullURL(), headers={"User-Agent": self.userAgent})
+        for header in response.headers:
+            if header in LoadList(IMPORTANTHEADERS):
+                self.results[header] = response.headers[header] # WARNING: dangerous, might be overwritten
         
         response = requests.head(self.target.GetFullURL(), headers={"User-Agent": self.userAgent}, allow_redirects=True)
         for header in response.headers:
@@ -127,7 +134,7 @@ class Core:
             if self.debug: print(f"[v] Starting bruteforce...")
             
             for variant in LoadList(IMPORTANTENTRIES):
-                req = requests.head(f"{self.target.GetFullURL()}/{variant}", headers={"User-Agent": self.userAgent}, allow_redirects=True)
+                req = requests.head(f"{self.target.GetFullURL()}/{variant}", headers={"User-Agent": self.userAgent}, allow_redirects=self.allowRedirect)
                 if req.status_code != 404:
                     if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                     self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]

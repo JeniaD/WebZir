@@ -33,6 +33,7 @@ def main():
     parser.add_argument("--output", help="output directory path")
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
     parser.add_argument("-v", "--verbose", help="use extensive output", action="store_true")
+    parser.add_argument("-a", "--allowRedirect", help="allow redirect when bruteforcing entries (slower)", action="store_true")
     args = parser.parse_args()
 
     startScanTime = time.time()
