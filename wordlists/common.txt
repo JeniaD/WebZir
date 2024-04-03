@@ -3,6 +3,7 @@ humans.txt
 README.txt
 LICENSE.txt
 CHANGELOG.txt
+log.txt
 access.log
 error.log
 web.config
@@ -10,6 +11,7 @@ sitemap.xml
 README
 LICENSE
 CHANGELOG
+log
 .htaccess
 admin
 administrator
