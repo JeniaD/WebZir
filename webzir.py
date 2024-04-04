@@ -33,13 +33,13 @@ def main():
     parser.add_argument("--output", help="output directory path")
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
     parser.add_argument("-v", "--verbose", help="use extensive output", action="store_true")
-    parser.add_argument("-a", "--allowRedirect", help="allow redirect when bruteforcing entries (slower)", action="store_true")
+    parser.add_argument("-f", "--disallowRedirect", help="don't allow redirect when bruteforcing entries (faster)", action="store_true")
     args = parser.parse_args()
 
     startScanTime = time.time()
     try:
         coreModules.SetTarget(args.target)
-        coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose, allowRedirect=args.allowRedirect)
+        coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose, allowRedirect=not args.disallowRedirect)
 
         if coreModules.target.IP == coreModules.target.hostname:
             Log(f"Initiating a security scan for {coreModules.target.GetFullURL()}...", status='?')

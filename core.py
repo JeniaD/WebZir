@@ -102,7 +102,7 @@ class Core:
     def RandomizeUserAgent(self):
         self.userAgent = random.choice(LoadList(USERAGENTS))
     
-    def Setup(self, randomUserAgent=False, verbose=False, allowRedirect=False):
+    def Setup(self, randomUserAgent=False, verbose=False, allowRedirect=True):
         if randomUserAgent: self.RandomizeUserAgent()
         self.debug = verbose
         self.allowRedirect = allowRedirect
