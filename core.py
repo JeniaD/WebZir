@@ -128,7 +128,7 @@ class Core:
             self.target.timeout = min(MAXREQWAIT, int(nonExistentResponse.headers["Retry-after"])/1000 + 1)
             if self.debug: print(f"[v] Set up Retry-after ({self.target.timeout})")
         elif nonExistentResponse.status_code != 404:
-            raise RuntimeError(f"Response for non-existent URL {self.target}/{RandomString()} responded with {nonExistentResponse}")
+            raise RuntimeError(f"Response for non-existent URL {self.target.GetFullURL()}/{RandomString()} responded with {nonExistentResponse}")
     
         if nonExistentResponse.status_code in [429, 404]:
             if self.debug: print(f"[v] Starting bruteforce...")
