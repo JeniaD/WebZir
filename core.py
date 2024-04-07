@@ -4,6 +4,7 @@ import re
 import random
 import time
 from bs4 import BeautifulSoup
+from whois import whois
 
 # Global values
 IMPORTANTENTRIES = "common.txt" # Wordlist for something that should be checked to identify server
@@ -83,7 +84,7 @@ class Target:
 
 class Core:
     def __init__(self, target="127.0.0.1") -> None:
-        self.version = "0.7"
+        self.version = "0.8"
         self.userAgent = "webzir/" + self.version
 
         self.target = Target()
@@ -93,6 +94,7 @@ class Core:
         self.wayback = []
 
         self.debug = False
+        self.allowRedirect = False
     
     def SetTarget(self, t):
         self.target.Parse(t)
@@ -101,12 +103,18 @@ class Core:
     def RandomizeUserAgent(self):
         self.userAgent = random.choice(LoadList(USERAGENTS))
     
-    def Setup(self, randomUserAgent=False, verbose=False):
+    def Setup(self, randomUserAgent=False, verbose=False, allowRedirect=True):
         if randomUserAgent: self.RandomizeUserAgent()
         self.debug = verbose
+        self.allowRedirect = allowRedirect
 
     def DetectTech(self):
         if self.debug: print(f"[v] Getting server headers...")
+        
+        response = requests.head(self.target.GetFullURL(), headers={"User-Agent": self.userAgent})
+        for header in response.headers:
+            if header in LoadList(IMPORTANTHEADERS):
+                self.results[header] = response.headers[header] # WARNING: dangerous, might be overwritten
         
         response = requests.head(self.target.GetFullURL(), headers={"User-Agent": self.userAgent}, allow_redirects=True)
         for header in response.headers:
@@ -116,18 +124,19 @@ class Core:
         if self.debug: print(f"[v] Server headers received")
         if self.debug: print(f"[v] Checking for availability of bruteforce enumeration...")
 
-        nonExistentResponse = requests.head(f"{self.target.GetFullURL()}/{RandomString()}", headers={"User-Agent": self.userAgent}, allow_redirects=True)
+        testReqURL = f"{self.target.GetFullURL()}{RandomString()}"
+        nonExistentResponse = requests.head(f"{testReqURL}", headers={"User-Agent": self.userAgent}, allow_redirects=True)
         if nonExistentResponse.status_code == 429:
             self.target.timeout = min(MAXREQWAIT, int(nonExistentResponse.headers["Retry-after"])/1000 + 1)
             if self.debug: print(f"[v] Set up Retry-after ({self.target.timeout})")
         elif nonExistentResponse.status_code != 404:
-            raise RuntimeError(f"Response for non-existent URL {self.target}/{RandomString()} responded with {nonExistentResponse}")
+            raise RuntimeError(f"Response for non-existent URL {testReqURL} responded with {nonExistentResponse}")
     
         if nonExistentResponse.status_code in [429, 404]:
             if self.debug: print(f"[v] Starting bruteforce...")
             
             for variant in LoadList(IMPORTANTENTRIES):
-                req = requests.head(f"{self.target.GetFullURL()}/{variant}", headers={"User-Agent": self.userAgent}, allow_redirects=True)
+                req = requests.head(f"{self.target.GetFullURL()}{variant}", headers={"User-Agent": self.userAgent}, allow_redirects=self.allowRedirect)
                 if req.status_code != 404:
                     if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                     self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]
@@ -158,3 +167,21 @@ class Core:
         result = list(dict.fromkeys(result))
 
         if result: self.wayback = result
+    
+    def Whois(self):
+        if self.target.IP == self.target.hostname: return
+        # TODO: add try...except
+        req = whois(self.target.hostname)
+
+        res = {}
+        if req.registrar: res["Registrar"] = req.registrar
+        if req.registrant: res["Registrant"] = req.registrant
+        if req.creation_date: res["Creation date"] = req.creation_date[0] if type(req.creation_date) == list else req.creation_date
+        if req.updated_date: res["Updated date"] = req.updated_date
+        if req.org: res["Organisation"] = req.org
+        if req.address: res["Address"] = req.address
+        if req.dnssec: res["DNSSEC"] = req.dnssec
+        if req.registrant_postal_code: res["Registrant postal code"] = req.registrant_postal_code
+        if req.country: res["Country"] = req.country
+
+        if res: self.results["Whois"] = res
