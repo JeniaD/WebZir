@@ -172,11 +172,16 @@ class Core:
         if self.target.IP == self.target.hostname: return
         # TODO: add try...except
         req = whois(self.target.hostname)
-        res = {
-            "Registrar": req.registrar,
-            "Creation date": req.creation_date,
-            "Updated date": req.updated_date,
-            "Registrant": req.registrant
-        }
+
+        res = {}
+        if req.registrar: res["Registrar"] = req.registrar
+        if req.registrant: res["Registrant"] = req.registrant
+        if req.creation_date: res["Creation date"] = req.creation_date[0] if type(req.creation_date) == list else req.creation_date
+        if req.updated_date: res["Updated date"] = req.updated_date
+        if req.org: res["Organisation"] = req.org
+        if req.address: res["Address"] = req.address
+        if req.dnssec: res["DNSSEC"] = req.dnssec
+        if req.registrant_postal_code: res["Registrant postal code"] = req.registrant_postal_code
+        if req.country: res["Country"] = req.country
 
         if res: self.results["Whois"] = res
