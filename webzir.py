@@ -39,7 +39,7 @@ def main():
     startScanTime = time.time()
     try:
         coreModules.SetTarget(args.target)
-        coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose, allowRedirect=not args.disallowRedirect)
+        coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose, allowRedirect=not args.noRedirect)
 
         if coreModules.target.IP == coreModules.target.hostname:
             Log(f"Initiating a security scan for {coreModules.target.GetFullURL()}...", status='?')
