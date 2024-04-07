@@ -4,6 +4,7 @@ import re
 import random
 import time
 from bs4 import BeautifulSoup
+from whois import whois
 
 # Global values
 IMPORTANTENTRIES = "common.txt" # Wordlist for something that should be checked to identify server
@@ -165,3 +166,9 @@ class Core:
         result = list(dict.fromkeys(result))
 
         if result: self.wayback = result
+    
+    def Whois(self):
+        if self.target.IP == self.target.hostname: return
+        # TODO: add try...except
+        res = whois(self.target.hostname)
+        self.results += res

@@ -50,6 +50,7 @@ def main():
         coreModules.DetectTech()
         coreModules.ScrapeWordlist()
         coreModules.Wayback()
+        coreModules.Whois()
     except (RuntimeError, requests.exceptions.ConnectionError) as e:
         Log(f"Fatal error: {e}", status='-')
         Log("Exiting...", status='?')
