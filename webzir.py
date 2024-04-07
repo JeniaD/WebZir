@@ -84,7 +84,7 @@ def main():
         if args.verbose: print("[?] Writing data to the files...")
         if not os.path.exists(args.output): os.makedirs(args.output)
         with open(f"{args.output}/report.txt", 'w') as file:
-            file.write(f"WebZir scanner v{coreModules.version}\nScan report for the host {coreModules.target.URL} ({coreModules.target.IP}) ")
+            file.write(f"WebZir scanner v{coreModules.version}\nScan report for the host {coreModules.target.GetFullURL()} ({coreModules.target.IP}) ")
             file.write(f"{datetime.datetime.now()}\n\n")
 
             for finding in coreModules.results:
