@@ -33,7 +33,7 @@ def main():
     parser.add_argument("--output", help="output directory path")
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
     parser.add_argument("-v", "--verbose", help="use extensive output", action="store_true")
-    parser.add_argument("-f", "--disallowRedirect", help="don't allow redirect when bruteforcing entries (faster)", action="store_true")
+    parser.add_argument("-f", "--noRedirect", help="don't allow redirect when bruteforcing entries (faster)", action="store_true")
     args = parser.parse_args()
 
     startScanTime = time.time()
@@ -81,19 +81,23 @@ def main():
     Log(f"Time elapsed: {totalScanTime}s", status='?')
     
     if args.output:
-        if args.verbose: print("[?] Saving data to the files...")
+        if args.verbose: print("[?] Writing data to the files...")
         if not os.path.exists(args.output): os.makedirs(args.output)
         with open(f"{args.output}/report.txt", 'w') as file:
             file.write(f"WebZir scanner v{coreModules.version}\nScan report for the host {coreModules.target.URL} ({coreModules.target.IP}) ")
             file.write(f"{datetime.datetime.now()}\n\n")
 
             for finding in coreModules.results:
-                if type(coreModules.results[finding]) != list:
-                    file.write(f"[+] {finding}: {coreModules.results[finding]}\n")
-                else:
+                if type(coreModules.results[finding]) == list:
                     file.write(f"[+] {finding}\n")
                     for i in coreModules.results[finding]: file.write(f"{i}; ")
                     file.write('\n')
+                elif type(coreModules.results[finding]) == dict:
+                    file.write(f"[+] {finding}\n")
+                    for elem in coreModules.results[finding]: file.write(f"    {elem}: {coreModules.results[finding][elem]}\n")
+                else:
+                    file.write(f"[+] {finding}: {coreModules.results[finding]}\n")
+
         with open(f"{args.output}/dictionary.txt", 'w') as file:
             for element in coreModules.wordlist: file.write(element + '\n')
         if coreModules.wayback:

@@ -3,11 +3,6 @@ A basic web scanner designed for reconnaissance.
 
 WebZir simplifies web findings and combines features of various tools commonly used by pentesters when assessing websites, such as Nikto, Gobuster, and Cewl. Despite providing combined functionality of multiple tools, WebZir minimizes dependencies to ensure a quick scanning process and easy installation.
 
-## Usage
-```
-python3 webzir.py target.com
-```
-
 ## Installation
 ```
 git clone https://github.com/JeniaD/WebZir.git
@@ -15,11 +10,13 @@ cd WebZir
 pip3 install -r requirements.txt
 ```
 
-## Functionality
+## Usage
 ```
 $ python3 webzir.py -h
 
-usage: webzir.py [-h] [--output OUTPUT] [-r] [-v] target
+usage: webzir.py [-h] [--output OUTPUT] [-r] [-v] [-f] target
+
+Lightweight web scanner for quick recon
 
 positional arguments:
   target              your target URL
@@ -29,6 +26,7 @@ optional arguments:
   --output OUTPUT     output directory path
   -r, --random-agent  use random user agent
   -v, --verbose       use extensive output
+  -f, --noRedirect    don't allow redirect when bruteforcing entries (faster)
 ```
 
 ## Example
@@ -47,7 +45,7 @@ $ python3 webzir.py target.com -r --output results
 
 [+] Server: Apache/2.4.56 (Debian)
 [+] Interesting findings
-    robots.txt (200); humans.txt (200); sitemap.xml (200); dashboard (403); 
+    robots.txt (200); humans.txt (200); sitemap.xml (200); dashboard (403);
 [+] Found 1 link(s) in Wayback machine
 
 [?] Time elapsed: 12.1s
