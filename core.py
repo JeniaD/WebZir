@@ -171,5 +171,12 @@ class Core:
     def Whois(self):
         if self.target.IP == self.target.hostname: return
         # TODO: add try...except
-        res = whois(self.target.hostname)
-        self.results += res
+        req = whois(self.target.hostname)
+        res = {
+            "Registrar": req.registrar,
+            "Creation date": req.creation_date,
+            "Updated date": req.updated_date,
+            "Registrant": req.registrant
+        }
+
+        if res: self.results["Whois"] = res

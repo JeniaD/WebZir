@@ -62,14 +62,18 @@ def main():
     totalScanTime = round(time.time() - startScanTime, 2)
     
     for finding in coreModules.results:
-        if type(coreModules.results[finding]) != list:
-            Log(f"{finding}: {coreModules.results[finding]}", status='+')
-        else:
+        if type(coreModules.results[finding]) == list:
             Log(f"{finding}", status='+')
             print("    ", end='')
             for i in coreModules.results[finding]:
                 print(f"{i}; ", end='')
             print()
+        elif type(coreModules.results[finding]) == dict:
+            Log(f"{finding}", status='+')
+            for elem in coreModules.results[finding]:
+                print(f"    {elem}: {coreModules.results[finding][elem]}")
+        else:
+            Log(f"{finding}: {coreModules.results[finding]}", status='+')
     
     if coreModules.wayback: Log(f"Found {len(coreModules.wayback)} link(s) in Wayback machine", status='+')
 
