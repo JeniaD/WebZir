@@ -124,18 +124,19 @@ class Core:
         if self.debug: print(f"[v] Server headers received")
         if self.debug: print(f"[v] Checking for availability of bruteforce enumeration...")
 
-        nonExistentResponse = requests.head(f"{self.target.GetFullURL()}/{RandomString()}", headers={"User-Agent": self.userAgent}, allow_redirects=True)
+        testReqURL = f"{self.target.GetFullURL()}{RandomString()}"
+        nonExistentResponse = requests.head(f"{testReqURL}", headers={"User-Agent": self.userAgent}, allow_redirects=True)
         if nonExistentResponse.status_code == 429:
             self.target.timeout = min(MAXREQWAIT, int(nonExistentResponse.headers["Retry-after"])/1000 + 1)
             if self.debug: print(f"[v] Set up Retry-after ({self.target.timeout})")
         elif nonExistentResponse.status_code != 404:
-            raise RuntimeError(f"Response for non-existent URL {self.target.GetFullURL()}/{RandomString()} responded with {nonExistentResponse}")
+            raise RuntimeError(f"Response for non-existent URL {testReqURL} responded with {nonExistentResponse}")
     
         if nonExistentResponse.status_code in [429, 404]:
             if self.debug: print(f"[v] Starting bruteforce...")
             
             for variant in LoadList(IMPORTANTENTRIES):
-                req = requests.head(f"{self.target.GetFullURL()}/{variant}", headers={"User-Agent": self.userAgent}, allow_redirects=self.allowRedirect)
+                req = requests.head(f"{self.target.GetFullURL()}{variant}", headers={"User-Agent": self.userAgent}, allow_redirects=self.allowRedirect)
                 if req.status_code != 404:
                     if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                     self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]
