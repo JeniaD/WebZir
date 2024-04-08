@@ -13,6 +13,7 @@ LICENSE
 CHANGELOG
 log
 .htaccess
+.git
 admin
 administrator
 phpmyadmin

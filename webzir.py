@@ -34,12 +34,13 @@ def main():
     parser.add_argument("-r", "--random-agent", help="use random user agent", action="store_true")
     parser.add_argument("-v", "--verbose", help="use extensive output", action="store_true")
     parser.add_argument("-f", "--noRedirect", help="don't allow redirect when bruteforcing entries (faster)", action="store_true")
+    parser.add_argument("-i", metavar="IGNORE_CODES", help="ignore status codes when bruteforcing", default="404")
     args = parser.parse_args()
 
     startScanTime = time.time()
     try:
         coreModules.SetTarget(args.target)
-        coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose, allowRedirect=not args.noRedirect)
+        coreModules.Setup(randomUserAgent=args.random_agent, verbose=args.verbose, allowRedirect=not args.noRedirect, excludeCodes=args.i)
 
         if coreModules.target.IP == coreModules.target.hostname:
             Log(f"Initiating a security scan for {coreModules.target.GetFullURL()}...", status='?')

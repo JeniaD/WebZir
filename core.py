@@ -31,7 +31,7 @@ def ConvertToIP(url):
 # Generate random string
 def RandomString():
     res = ""
-    chars = "1234567890qwertyuiopasdfghjklzxcvbnm"
+    chars = "1234567890qwertyuiopasdfghjklzxcvbnm" # Add letters
     for i in range(random.randint(5, 15)):
         res += random.choice(chars)
     
@@ -95,6 +95,8 @@ class Core:
 
         self.debug = False
         self.allowRedirect = False
+
+        self.excludeCodes = [404]
     
     def SetTarget(self, t):
         self.target.Parse(t)
@@ -103,10 +105,11 @@ class Core:
     def RandomizeUserAgent(self):
         self.userAgent = random.choice(LoadList(USERAGENTS))
     
-    def Setup(self, randomUserAgent=False, verbose=False, allowRedirect=True):
+    def Setup(self, randomUserAgent=False, verbose=False, allowRedirect=True, excludeCodes="404"):
         if randomUserAgent: self.RandomizeUserAgent()
         self.debug = verbose
         self.allowRedirect = allowRedirect
+        self.excludeCodes = [int(i) for i in excludeCodes.replace(' ', '').replace(';', ',').split(',')]
 
     def DetectTech(self):
         if self.debug: print(f"[v] Getting server headers...")
@@ -129,15 +132,15 @@ class Core:
         if nonExistentResponse.status_code == 429:
             self.target.timeout = min(MAXREQWAIT, int(nonExistentResponse.headers["Retry-after"])/1000 + 1)
             if self.debug: print(f"[v] Set up Retry-after ({self.target.timeout})")
-        elif nonExistentResponse.status_code != 404:
-            raise RuntimeError(f"Response for non-existent URL {testReqURL} responded with {nonExistentResponse}")
+        elif nonExistentResponse.status_code not in self.excludeCodes: #!= 404:
+            raise RuntimeError(f"Response for non-existent URL {testReqURL} responded with {nonExistentResponse}") # change response
     
         if nonExistentResponse.status_code in [429, 404]:
             if self.debug: print(f"[v] Starting bruteforce...")
             
             for variant in LoadList(IMPORTANTENTRIES):
                 req = requests.head(f"{self.target.GetFullURL()}{variant}", headers={"User-Agent": self.userAgent}, allow_redirects=self.allowRedirect)
-                if req.status_code != 404:
+                if req.status_code not in self.excludeCodes: # != 404:
                     if not "Interesting findings" in self.results: self.results["Interesting findings"] = []
                     self.results["Interesting findings"] += [f"{variant} ({req.status_code})"]
                     if self.debug: print(f"[v] Found {variant} ({req.status_code})")
