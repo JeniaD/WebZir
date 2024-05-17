@@ -8,7 +8,7 @@ from whois import whois
 
 # Global values
 IMPORTANTENTRIES = "common.txt" # Wordlist for something that should be checked to identify server
-IMPORTANTHEADERS = "OWASP_dangerousHeaders.txt" # Wordlist for headers that should be checked
+COMMONHEADERS = "commonHeaders.txt" # Wordlist for headers that aren't important
 USERAGENTS = "userAgents.txt" # List of random user-agents
 MAXREQWAIT = 3 # Max wait time between requests
 DEFAULTPROTOCOL = "http" # Default protocol
@@ -116,12 +116,12 @@ class Core:
         
         response = requests.head(self.target.GetFullURL(), headers={"User-Agent": self.userAgent})
         for header in response.headers:
-            if header in LoadList(IMPORTANTHEADERS):
+            if header not in LoadList(COMMONHEADERS):
                 self.results[header] = response.headers[header] # WARNING: dangerous, might be overwritten
         
         response = requests.head(self.target.GetFullURL(), headers={"User-Agent": self.userAgent}, allow_redirects=True)
         for header in response.headers:
-            if header in LoadList(IMPORTANTHEADERS):
+            if header not in LoadList(COMMONHEADERS):
                 self.results[header] = response.headers[header] # WARNING: dangerous, might be overwritten
         
         if self.debug: print(f"[v] Server headers received")
