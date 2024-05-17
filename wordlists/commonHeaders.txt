@@ -10,3 +10,16 @@ Strict-Transport-Security
 X-Content-Type-Options
 X-Frame-Options
 X-Permitted-Cross-Domain-Policies
+Location
+Content-Type
+Content-Security-Policy-Report-Only
+Date
+Expires
+Content-Length
+Transfer-Encoding
+X-XSS-Protection
+Connection
+Vary
+Accept-Ranges
+Content-Language
+Content-Encoding

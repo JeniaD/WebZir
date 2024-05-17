@@ -162,12 +162,15 @@ class Core:
         req = requests.get(portal, headers={"User-Agent": self.userAgent})
         result = []
         
-        for v in req.json()[1:]:
-            if type(v) == list:
-                result += v
-            else: result += [v]
+        try:
+            for v in req.json()[1:]:
+                if type(v) == list:
+                    result += v
+                else: result += [v]
 
-        result = list(dict.fromkeys(result))
+            result = list(dict.fromkeys(result))
+        except Exception:
+            pass
 
         if result: self.wayback = result
     
