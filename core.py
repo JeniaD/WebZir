@@ -116,12 +116,12 @@ class Core:
         
         response = requests.head(self.target.GetFullURL(), headers={"User-Agent": self.userAgent})
         for header in response.headers:
-            if header not in LoadList(COMMONHEADERS):
+            if header.lower() not in LoadList(COMMONHEADERS):
                 self.results[header] = response.headers[header] # WARNING: dangerous, might be overwritten
         
         response = requests.head(self.target.GetFullURL(), headers={"User-Agent": self.userAgent}, allow_redirects=True)
         for header in response.headers:
-            if header not in LoadList(COMMONHEADERS):
+            if header.lower() not in LoadList(COMMONHEADERS):
                 self.results[header] = response.headers[header] # WARNING: dangerous, might be overwritten
         
         if self.debug: print(f"[v] Server headers received")
